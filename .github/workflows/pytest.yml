@@ -30,7 +30,10 @@ jobs:
 
       - name: Run pytest with coverage
         run: |
-          pytest --cov=directory_name_searcher --cov-report=term
+          pytest \
+            --cov=directory_name_searcher \
+            --cov-report=term \
+            --cov-fail-under=90
 
       - name: Smoke test CLI command
         run: |
