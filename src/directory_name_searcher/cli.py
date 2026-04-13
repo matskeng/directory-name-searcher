@@ -139,8 +139,25 @@ def main() -> None:
 
     print(f"検索結果を CSV に出力しました: {args.output}")
 
-    if args.fail_on_found and any(paths for paths in results.values()):
-        sys.exit(1)
+    if args.fail_on_found:
+        found_targets = {
+            name: paths for name, paths in results.items() if paths
+        }
+
+        if found_targets:
+            target_count = len(found_targets)
+            path_count = sum(len(paths) for paths in found_targets.values())
+
+            print(
+                f"Error: {target_count} forbidden targets detected "
+                f"({path_count} paths).",
+                file=sys.stderr,
+            )
+            print(
+                f"See CSV for details: {args.output}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()

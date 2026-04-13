@@ -184,3 +184,20 @@ def test_cli_fail_on_found(tmp_path: Path) -> None:
     rows = read_csv(output_csv)
     assert rows[1][0] == "build"
     assert rows[1][1] == "True"
+
+def test_cli_fail_on_found_message(tmp_path, capsys):
+    create_test_structure(tmp_path)
+
+    output_csv = tmp_path / "result.csv"
+
+    with pytest.raises(SystemExit):
+        run_cli([
+            "prog",
+            "--target", "build",
+            "--fail-on-found",
+            "--root", str(tmp_path),
+            "--output", str(output_csv),
+        ])
+
+    captured = capsys.readouterr()
+    assert "forbidden targets detected" in captured.err
