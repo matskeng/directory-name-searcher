@@ -4,6 +4,7 @@
 
 import argparse
 import csv
+import sys
 from pathlib import Path
 from typing import List, Set
 from importlib.metadata import version
@@ -28,7 +29,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="フォルダ名を再帰的に検索し、CSVに出力します。"
     )
-    
+
     parser.add_argument(
         "--version",
         action="version",
@@ -74,6 +75,12 @@ def parse_args() -> argparse.Namespace:
         help="フォルダ名を部分一致で検索する",
     )
 
+    parser.add_argument(
+        "--fail-on-found",
+        action="store_true",
+        help="検索対象が1つでも見つかった場合に終了コード1で終了する",
+    )
+    
     return parser.parse_args()
 
 def unique_preserve_order(values: List[str]) -> List[str]:
@@ -132,6 +139,8 @@ def main() -> None:
 
     print(f"検索結果を CSV に出力しました: {args.output}")
 
+    if args.fail_on_found and any(paths for paths in results.values()):
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

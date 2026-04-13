@@ -136,6 +136,16 @@ directory-name-searcher   --target build   --partial-match   --output result.csv
 directory-name-searcher   --target build   --root /path/to/project   --output result.csv
 ```
 
+### CI用途（fail-on-found）
+
+```bash
+directory-name-searcher \
+  --target-file forbidden.txt \
+  --output result.csv \
+  --fail-on-found
+```
+検索対象が 1 件でも見つかった場合、CSV を出力したうえで終了コード 1 を返します。
+
 ---
 
 ### ヘルプの表示

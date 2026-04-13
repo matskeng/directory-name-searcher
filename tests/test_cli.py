@@ -157,3 +157,30 @@ def test_cli_ignore_case(tmp_path: Path) -> None:
 
     assert rows[1][0] == "BUILD"
     assert rows[1][1] == "True"
+
+def test_cli_fail_on_found(tmp_path: Path) -> None:
+    """
+    --fail-on-found 指定時、結果を CSV に出力したうえで fail する
+    """
+    create_test_structure(tmp_path)
+
+    output_csv = tmp_path / "result.csv"
+
+    with pytest.raises(SystemExit) as excinfo:
+        run_cli([
+            "prog",
+            "--target", "build",
+            "--fail-on-found",
+            "--root", str(tmp_path),
+            "--output", str(output_csv),
+        ])
+
+    # exit code = 1
+    assert excinfo.value.code == 1
+
+    # CSV は出力されている
+    assert output_csv.exists()
+
+    rows = read_csv(output_csv)
+    assert rows[1][0] == "build"
+    assert rows[1][1] == "True"
