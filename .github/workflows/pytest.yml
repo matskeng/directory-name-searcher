@@ -38,3 +38,17 @@ jobs:
       - name: Smoke test CLI command
         run: |
           directory-name-searcher --help
+
+      - name: Check forbidden directories and files
+        run: |
+          directory-name-searcher \
+            --target-file ci/forbidden.txt \
+            --output forbidden_check.csv \
+            --fail-on-found
+      
+      - name: Upload forbidden check result
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: forbidden-check-result
+          path: forbidden_check.csv
