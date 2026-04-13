@@ -1,22 +1,47 @@
+
 # directory-name-searcher
 
-フォルダ名およびファイル名を指定し、  
+フォルダ名およびファイル名を指定し、
 **カレントディレクトリ配下を再帰的に検索して CSV に出力する Python 製 CLI ツール**です。
 
-- フォルダ名・ファイル名の両方に対応  
-- 完全一致／部分一致の切り替えが可能  
-- 出力順は入力順で安定  
-- Excel で文字化けしない CSV を出力  
+- フォルダ名・ファイル名の両方に対応
+- 完全一致／部分一致の切り替えが可能
+- 入力順を保持した安定した結果出力
+- Excel で文字化けしない UTF-8（BOM付き）CSV を出力
+- CI / スクリプト用途を想定した軽量ツール
 
 ---
 
 ## 概要
 
-本ツールは、以下のような用途を想定しています。
+本ツールは、以下のような用途での利用を想定しています。
 
-- プロジェクト配下に **特定のフォルダ／ファイルが存在するか確認**したい  
-- CI において **禁止フォルダ・禁止ファイルの有無をチェック**したい  
-- 結果を **CSV として後工程（Excel / スクリプト）で利用**したい  
+- リポジトリ配下に **特定のフォルダ／ファイルが存在するかを確認**したい
+- CI において **禁止フォルダ・禁止ファイルの有無を自動チェック**したい
+- 検索結果を **CSV 形式で後続処理（Excel / スクリプト）に渡したい**
+
+---
+
+## リポジトリ構成
+
+```text
+directory-name-searcher/
+├─ src/
+│  └─ directory_name_searcher/
+│     ├─ __init__.py
+│     ├─ cli.py          # CLI エントリーポイント
+│     ├─ search.py       # 再帰検索ロジック
+│     └─ loader.py       # 入力ファイル読み込み処理
+├─ tests/                # pytest による単体テスト
+│  ├─ test_cli.py
+│  ├─ test_search.py
+│  └─ test_loader.py
+├─ inputs/               # サンプル入力ファイル
+├─ README.md
+├─ pyproject.toml
+├─ requirements.txt
+└─ .gitignore
+```
 
 ---
 
@@ -27,59 +52,59 @@
 
 ---
 
-## フォルダ構成
+## インストール方法
 
-```text
-directory-name-searcher/
-├─ src/
-│  └─ directory_name_searcher/
-│     ├─ __init__.py
-│     ├─ cli.py
-│     └─ search.py
-├─ README.md
-├─ requirements.txt
-└─ .gitignore
+本ツールは Python 製の CLI ツールとして、`pip` を用いてインストールできます。
+
+### 前提条件
+
+- Python **3.10 以上**
+- `pip` が利用可能であること
+
+### 開発用（推奨）：editable install
+
+リポジトリを clone した状態で、リポジトリ直下にて以下を実行してください。
+
+```bash
+pip install -e .
+```
+
+この方法では、
+
+- ソースコードを修正すると即座に CLI に反映される
+- 開発・検証に適した形で利用できる
+
+というメリットがあります。
+
+インストール後、以下のコマンドが使用可能になります。
+
+```bash
+directory-name-searcher
+```
+
+### アンインストール
+
+```bash
+pip uninstall directory-name-searcher
 ```
 
 ---
 
-## インストール
+## 実行方法
 
-### ローカルでそのまま実行する場合（推奨）
+### 基本的な使い方
 
-インストールは不要です。
-
-```bat
-cd src
+```bash
+directory-name-searcher   --target build dist README.md   --output result.csv
 ```
 
 ---
 
-## 使い方
+### 検索対象をファイルで指定する場合
 
-### 基本
+検索対象名を 1 行 1 件で記載したテキストファイルを用意します。
 
-```bat
-python -m directory_name_searcher.cli ^  --target build dist README.md ^  --output result.csv
-```
-
----
-
-### 部分一致で検索する場合
-
-```bat
-python -m directory_name_searcher.cli ^  --target build ^  --partial-match ^  --output result.csv
-```
-
----
-
-### 検索対象をファイルから指定する場合
-
-```bat
-python -m directory_name_searcher.cli ^  --target-file inputs/folders.txt ^  --output result.csv
-```
-
-`folders.txt` は以下の形式を想定します。
+例：`inputs/folders.txt`
 
 ```text
 build
@@ -87,41 +112,49 @@ dist
 README.md
 ```
 
----
+実行例：
 
-### 直接指定 + ファイル指定を併用する場合
-
-```bat
-python -m directory_name_searcher.cli ^  --target build ^  --target-file inputs/folders.txt ^  --output result.csv
+```bash
+directory-name-searcher   --target-file inputs/folders.txt   --output result.csv
 ```
 
-※ 両方指定した場合は **和集合**が検索対象となります。
+---
+
+### 部分一致で検索する場合
+
+```bash
+directory-name-searcher   --target build   --partial-match   --output result.csv
+```
 
 ---
 
-## オプション一覧
+### 検索開始ディレクトリを指定する場合
 
-| オプション | 説明 |
-|---|---|
-| `--target` | 検索対象のフォルダ名／ファイル名（複数指定可） |
-| `--target-file` | 検索対象名を1行1件で記載したファイル |
-| `--root` | 検索開始ディレクトリ（デフォルト：カレントディレクトリ） |
-| `--output` | 出力 CSV ファイルパス（必須） |
-| `--partial-match` | 部分一致で検索する |
-| `--ignore-case` | 大文字・小文字を区別しない |
+```bash
+directory-name-searcher   --target build   --root /path/to/project   --output result.csv
+```
+
+---
+
+### ヘルプの表示
+
+利用可能なオプション一覧は以下で確認できます。
+
+```bash
+directory-name-searcher --help
+```
 
 ---
 
 ## 出力形式（CSV）
 
-CSV は **UTF-8（BOM付き）** で出力され、  
-Windows 版 Excel でも文字化けせずに開けます。
+CSV は **UTF-8（BOM付き）** で出力され、Windows 版 Excel でも文字化けせずに開くことができます。
 
 ### 出力例
 
 ```csv
 name,found,paths
-build,true,C:\work\projAbuild;C:\work\projBbuild_debug
+build,true,C:\work\projA\build;C:\work\projB\build_debug
 dist,false,
 README.md,true,C:\work\projA\README.md
 ```
@@ -129,28 +162,21 @@ README.md,true,C:\work\projA\README.md
 ### 各列の意味
 
 | 列名 | 説明 |
-|---|---|
+|------|------|
 | `name` | 検索対象名（フォルダ名／ファイル名） |
-| `found` | 1件以上見つかった場合 `true` |
+| `found` | 1件以上見つかった場合 `True` |
 | `paths` | 該当パス一覧（`;` 区切り） |
 
 ---
 
-## 仕様・注意点
+## テスト
 
-- 検索は **再帰的** に行われます
-- デフォルトでは **完全一致** です
-- `--partial-match` 指定時は部分一致となります
-- 出力結果の行順は **入力順を保持**します
-- パスの並び順はアルファベット順にソートされます
+本リポジトリでは `pytest` を用いた単体テストを実装しています。
 
----
-
-## よくある用途例
-
-- CI での **禁止フォルダ／ファイル検出**
-- リポジトリ構成の定期チェック
-- 大規模ディレクトリ調査の自動化
+```bash
+pip install -e .[dev]
+pytest
+```
 
 ---
 
