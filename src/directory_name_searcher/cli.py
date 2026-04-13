@@ -92,7 +92,9 @@ def main() -> None:
     targets = unique_preserve_order(targets)
 
     if not targets:
-        raise ValueError("検索対象フォルダ名が指定されていません")
+        raise SystemExit(
+            "error: --target または --target-file を指定してください"
+        )
 
     # --- 検索実行 ---
     results = search_directories(
