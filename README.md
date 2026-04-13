@@ -1,7 +1,7 @@
 
 # directory-name-searcher
 
-[![Python Versions](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue)]
+![Python Versions](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue)
 ![CI - pytest](https://github.com/matskeng/directory-name-searcher/actions/workflows/pytest.yml/badge.svg)
 
 フォルダ名およびファイル名を指定し、
@@ -136,6 +136,11 @@ directory-name-searcher   --target build   --partial-match   --output result.csv
 ```bash
 directory-name-searcher   --target build   --root /path/to/project   --output result.csv
 ```
+
+### バージョン表示
+
+```bash
+directory-name-searcher --version
 
 ### CI用途（fail-on-found）
 
