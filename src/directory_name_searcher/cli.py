@@ -6,6 +6,7 @@ import argparse
 import csv
 from pathlib import Path
 from typing import List, Set
+from importlib.metadata import version
 
 from directory_name_searcher.search import search_directories
 
@@ -26,6 +27,13 @@ def load_targets_from_file(path: Path) -> List[str]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="フォルダ名を再帰的に検索し、CSVに出力します。"
+    )
+    
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {version('directory-name-searcher')}",
+        help="バージョンを表示して終了する",
     )
 
     parser.add_argument(
