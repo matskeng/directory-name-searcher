@@ -1,7 +1,7 @@
 
 # directory-name-searcher
 
-https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue
+[![Python Versions](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue)]
 ![CI - pytest](https://github.com/matskeng/directory-name-searcher/actions/workflows/pytest.yml/badge.svg)
 
 フォルダ名およびファイル名を指定し、
