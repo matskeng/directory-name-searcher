@@ -141,6 +141,7 @@ directory-name-searcher   --target build   --root /path/to/project   --output re
 
 ```bash
 directory-name-searcher --version
+```
 
 ### CI用途（fail-on-found）
 
