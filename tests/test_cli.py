@@ -65,7 +65,7 @@ def test_cli_basic_csv_output(tmp_path: Path) -> None:
     rows = read_csv(output_csv)
 
     # ヘッダ確認
-    assert rows[0] == ["folder_name", "found", "paths"]
+    assert rows[0] == ["name", "found", "paths"]
 
     # build は見つかる
     assert rows[1][0] == "build"

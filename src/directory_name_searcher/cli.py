@@ -111,7 +111,7 @@ def main() -> None:
         encoding="utf-8-sig"  # Excel対策：UTF-8 BOM付き
     ) as f:
         writer = csv.writer(f)
-        writer.writerow(["folder_name", "found", "paths"])
+        writer.writerow(["name", "found", "paths"])
 
         for folder_name, paths in results.items():
             writer.writerow(
