@@ -113,3 +113,47 @@ def test_cli_no_target_error(tmp_path: Path) -> None:
             "prog",
             "--output", str(output_csv),
         ])
+
+def test_cli_target_file(tmp_path: Path) -> None:
+    """
+    --target-file 指定で検索できる
+    """
+    create_test_structure(tmp_path)
+
+    target_file = tmp_path / "folders.txt"
+    target_file.write_text("build\n", encoding="utf-8")
+
+    output_csv = tmp_path / "result.csv"
+
+    run_cli([
+        "prog",
+        "--target-file", str(target_file),
+        "--root", str(tmp_path),
+        "--output", str(output_csv),
+    ])
+
+    rows = read_csv(output_csv)
+
+    assert rows[1][0] == "build"
+    assert rows[1][1] == "True"
+
+def test_cli_ignore_case(tmp_path: Path) -> None:
+    """
+    --ignore-case 指定で大文字小文字を無視する
+    """
+    create_test_structure(tmp_path)
+
+    output_csv = tmp_path / "result.csv"
+
+    run_cli([
+        "prog",
+        "--target", "BUILD",
+        "--ignore-case",
+        "--root", str(tmp_path),
+        "--output", str(output_csv),
+    ])
+
+    rows = read_csv(output_csv)
+
+    assert rows[1][0] == "BUILD"
+    assert rows[1][1] == "True"
