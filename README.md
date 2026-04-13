@@ -1,6 +1,8 @@
 
 # directory-name-searcher
 
+![CI - pytest](https://github.com/matskeng/directory-name-searcher/actions/workflows/pytest.yml/badge.svg)
+
 フォルダ名およびファイル名を指定し、
 **カレントディレクトリ配下を再帰的に検索して CSV に出力する Python 製 CLI ツール**です。
 
