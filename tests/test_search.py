@@ -34,6 +34,7 @@ def test_search_exact_match_directory(tmp_path: Path) -> None:
 
     assert "build" in results
     assert len(results["build"]) == 1
+    assert results["build"][0].is_dir()
     assert results["build"][0].name == "build"
 
 
@@ -48,25 +49,13 @@ def test_search_partial_match_directory(tmp_path: Path) -> None:
 
     names = {path.name for path in results["build"]}
 
-    assert "build" in names
-    assert "build_debug" in names
-    assert len(names) == 2
-
-
-def test_search_file_name(tmp_path: Path) -> None:
-    create_test_structure(tmp_path)
-
-    results = search_directories(
-        root=tmp_path,
-        target_names=["README.md"],
-    )
-
-    assert len(results["README.md"]) == 1
-    assert results["README.md"][0].is_file()
-    assert results["README.md"][0].name == "README.md"
+    assert names == {"build", "build_debug"}
 
 
 def test_search_not_found(tmp_path: Path) -> None:
+    """
+    存在しないフォルダ名はヒットしない
+    """
     create_test_structure(tmp_path)
 
     results = search_directories(
@@ -76,11 +65,25 @@ def test_search_not_found(tmp_path: Path) -> None:
 
     assert results["not_exist"] == []
 
+def test_search_ignores_files(tmp_path: Path) -> None:
+    """
+    ファイル名は検索対象に含まれない
+    """
+    create_test_structure(tmp_path)
+
+    results = search_directories(
+        root=tmp_path,
+        target_names=["README.md"],
+    )
+
+    # README.md はファイルなのでヒットしない
+    assert results["README.md"] == []
+
 
 def test_search_order_is_preserved(tmp_path: Path) -> None:
     create_test_structure(tmp_path)
 
-    targets = ["dist", "build", "README.md"]
+    targets = ["dist", "build", "src"]
 
     results = search_directories(
         root=tmp_path,

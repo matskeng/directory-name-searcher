@@ -27,6 +27,9 @@ def search_directories(
     }
 
     for path in root.rglob("*"):
+        if not path.is_dir():
+            continue
+
         name = normalize(path.name)
 
         for norm_target, original_target in normalized_targets.items():

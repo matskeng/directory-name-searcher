@@ -55,7 +55,7 @@ def test_cli_basic_csv_output(tmp_path: Path) -> None:
 
     run_cli([
         "prog",
-        "--target", "build", "README.md",
+        "--target", "build", "src",
         "--root", str(tmp_path),
         "--output", str(output_csv),
     ])
@@ -74,16 +74,16 @@ def test_cli_basic_csv_output(tmp_path: Path) -> None:
     assert build_row[1] == "True"
     assert build_row[2].endswith("build")
 
-    # README.md
-    readme_row = rows[2]
-    assert readme_row[0] == "README.md"
-    assert readme_row[1] == "True"
-    assert readme_row[2].endswith("README.md")
+    # src
+    src_row = rows[2]
+    assert src_row[0] == "src"
+    assert src_row[1] == "True"
+    assert src_row[2].endswith("src")
 
 
 def test_cli_partial_match(tmp_path: Path) -> None:
     """
-    --partial-match 指定時に複数パスが列として展開される
+    --partial-match 指定時に複数フォルダが列として展開される
     """
     create_test_structure(tmp_path)
 
@@ -127,7 +127,7 @@ def test_cli_target_file(tmp_path: Path) -> None:
     create_test_structure(tmp_path)
 
     target_file = tmp_path / "folders.txt"
-    target_file.write_text("build\n", encoding="utf-8")
+    target_file.write_text("build\nsrc\n", encoding="utf-8")
 
     output_csv = tmp_path / "result.csv"
 
@@ -142,6 +142,8 @@ def test_cli_target_file(tmp_path: Path) -> None:
 
     assert rows[1][0] == "build"
     assert rows[1][1] == "True"
+    assert rows[2][0] == "src"
+    assert rows[2][1] == "True"
 
 def test_cli_ignore_case(tmp_path: Path) -> None:
     """
