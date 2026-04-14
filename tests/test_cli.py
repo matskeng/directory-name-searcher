@@ -64,23 +64,26 @@ def test_cli_basic_csv_output(tmp_path: Path) -> None:
 
     rows = read_csv(output_csv)
 
-    # ヘッダ確認
-    assert rows[0] == ["name", "found", "paths"]
+    # ヘッダ確認（path_1 まであれば十分）
+    assert rows[0][:2] == ["name", "found"]
+    assert rows[0][2].startswith("path_")
 
-    # build は見つかる
-    assert rows[1][0] == "build"
-    assert rows[1][1] == "True"
-    assert "build" in rows[1][2]
+    # build（完全一致なので build のみ）
+    build_row = rows[1]
+    assert build_row[0] == "build"
+    assert build_row[1] == "True"
+    assert build_row[2].endswith("build")
 
-    # README.md も見つかる
-    assert rows[2][0] == "README.md"
-    assert rows[2][1] == "True"
-    assert rows[2][2].endswith("README.md")
+    # README.md
+    readme_row = rows[2]
+    assert readme_row[0] == "README.md"
+    assert readme_row[1] == "True"
+    assert readme_row[2].endswith("README.md")
 
 
 def test_cli_partial_match(tmp_path: Path) -> None:
     """
-    --partial-match 指定時に複数ヒットする
+    --partial-match 指定時に複数パスが列として展開される
     """
     create_test_structure(tmp_path)
 
@@ -95,11 +98,14 @@ def test_cli_partial_match(tmp_path: Path) -> None:
     ])
 
     rows = read_csv(output_csv)
+    build_row = rows[1]
 
-    paths = rows[1][2]
+    assert build_row[0] == "build"
+    assert build_row[1] == "True"
 
-    assert "build" in paths
-    assert "build_debug" in paths
+    paths = build_row[2:]
+    assert any(p.endswith("build") for p in paths)
+    assert any(p.endswith("build_debug") for p in paths)
 
 
 def test_cli_no_target_error(tmp_path: Path) -> None:

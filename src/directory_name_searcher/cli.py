@@ -120,22 +120,28 @@ def main() -> None:
     )
 
     # --- CSV 出力 ---
+    # 最大パス数を求めてヘッダを動的に生成
+    max_path_count = max((len(paths) for paths in results.values()), default=0)
+
     with args.output.open(
         "w",
         newline="",
         encoding="utf-8-sig"  # Excel対策：UTF-8 BOM付き
     ) as f:
         writer = csv.writer(f)
-        writer.writerow(["name", "found", "paths"])
 
-        for folder_name, paths in results.items():
-            writer.writerow(
-                [
-                    folder_name,
-                    bool(paths),
-                    ";".join(str(p) for p in paths),
-                ]
-            )
+        header = ["name", "found"] + [
+            f"path_{i + 1}" for i in range(max_path_count)
+        ]
+        writer.writerow(header)
+
+        for name, paths in results.items():
+            row = [
+                name,
+                bool(paths),
+                *[str(p) for p in paths],
+            ]
+            writer.writerow(row)
 
     print(f"検索結果を CSV に出力しました: {args.output}")
 

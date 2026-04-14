@@ -10,6 +10,7 @@
 - フォルダ名・ファイル名の両方に対応
 - 完全一致／部分一致の切り替えが可能
 - 入力順を保持した安定した結果出力
+- 1 行 = 1 検索対象、パスは複数列に展開
 - Excel で文字化けしない UTF-8（BOM付き）CSV を出力
 - CI / スクリプト用途を想定した軽量ツール
 
@@ -137,11 +138,15 @@ directory-name-searcher   --target build   --partial-match   --output result.csv
 directory-name-searcher   --target build   --root /path/to/project   --output result.csv
 ```
 
+---
+
 ### バージョン表示
 
 ```bash
 directory-name-searcher --version
 ```
+
+---
 
 ### CI用途（fail-on-found）
 
@@ -169,13 +174,20 @@ directory-name-searcher --help
 
 CSV は **UTF-8（BOM付き）** で出力され、Windows 版 Excel でも文字化けせずに開くことができます。
 
+### 出力仕様
+
+- **1 行 = 1 検索対象（name）**
+- 見つかったパスは **複数列（path_1, path_2, ...）として展開**
+- 同一検索対象で複数ヒットした場合も 1 行に集約
+- 見つからなかった場合は `found=False`、パス列は空
+
 ### 出力例
 
 ```csv
-name,found,paths
-build,true,C:\work\projA\build;C:\work\projB\build_debug
-dist,false,
-README.md,true,C:\work\projA\README.md
+name,found,path_1,path_2
+build,True,C:\work\projA\build,C:\work\projA\build_debug
+dist,False,
+README.md,True,C:\work\projA\README.md
 ```
 
 ### 各列の意味
@@ -183,8 +195,8 @@ README.md,true,C:\work\projA\README.md
 | 列名 | 説明 |
 |------|------|
 | `name` | 検索対象名（フォルダ名／ファイル名） |
-| `found` | 1件以上見つかった場合 `True` |
-| `paths` | 該当パス一覧（`;` 区切り） |
+| `found` | 該当パスが 1 件以上存在する場合 `True` |
+| `path_n` | n 番目に見つかったパス |
 
 ---
 
